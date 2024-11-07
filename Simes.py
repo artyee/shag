@@ -6,9 +6,11 @@ class Human:
         self.home = home
         self.job = job
         self.car = car
+        self.friend = Friends
         self.money = 100
         self.gladness = 50
         self.satiety = 50
+        self.mind = 50
 
     def get_home(self):
         self.home = House()
@@ -23,6 +25,9 @@ class Human:
             self.to_repair()
             return
         self.job = Job(job_list)
+
+    def get_friend(self):
+        self.friend = Friends(friends_list)
 
     def eat(self):
         if self.home.food <= 0:
@@ -47,6 +52,7 @@ class Human:
         self.money += self.job.salary
         self.gladness -= self.job.gladness_less
         self.satiety -= 5
+        self.mind -= self.job.monotone
 
     def shopping(self, manage):
         if self.car.drive:
@@ -84,6 +90,11 @@ class Human:
         self.car.strength += 100
         self.money -= 50
 
+    def to_invite_friends(self):
+        self.mind += self.social.support
+        self.money -= self.danger
+        self.gladness += 20
+
     def day_index(self, day):
         day = f"syodni {day} z zhyttya {self.name}a"
         print(f"{day:=^50}", "\n")
@@ -92,6 +103,7 @@ class Human:
         print(f"Bablo - {self.money}")
         print(f"Sitist - {self.satiety}")
         print(f"Dovolnist - {self.gladness}")
+        print(f"gluzd - {self.mind}")
 
         home_index = f"Home tablo"
         print(f"{home_index:=^50}", "\n")
@@ -113,22 +125,28 @@ class Human:
         if self.money < - 500:
             print("Bankrot...")
             return False
+        if self.mind <= 0:
+            print("Psih...")
+            return False
 
     def live(self, day):
         if self.is_alive() == False:
             return False
         if self.home is None:
-            print("Bomzh")
+            print("Nada hatu kupyt")
             self.get_home()
         if self.car is None:
             self.get_car()
-            print(f"Kupy mashinu {self.car.brand}")
+            print(f"Kuplyu mashinu {self.car.brand}")
         if self.job is None:
             self.get_job()
             print(f"meni nada bablo togo ya stav {self.job.job}om z zarplatoyu {self.job.salary} kopiyok")
+        if self.friend is None:
+            self.get.friend()
+            print(f"Shob v mene ne poyihav dah cherez robotu ya sobi nayshov druga {self.friend.friend}a")
         self.day_index(day)
 
-        dice = random.randint(1, 4)
+        dice = random.randint(1, 5)
         if self.satiety < 20:
             print("zhraaaaat!")
             self.eat()
@@ -157,6 +175,9 @@ class Human:
         elif dice == 4:
             print("Chas dlya vkusnyashok")
             self.shopping(manage="Yaycya")
+        elif dice == 5:
+            print("Skuchno, nada druga zaprosity")
+            self.to_invite_friends()
 
 
 brands_of_car = {
@@ -188,10 +209,10 @@ class House:
         self.food = 0
 
 job_list = {
-    "Java Developer":{"salary":50, "gladness_less":10},
-    "Python Developer":{"salary":40, "gladness_less":3},
-    "C++ Developer":{"salary":45, "gladness_less":25},
-    "Ruby Developer":{"salary":70, "gladness_less":1}
+    "Java Developer":{"salary":50, "gladness_less":10, "monotone":15},
+    "Python Developer":{"salary":40, "gladness_less":3, "monotone":10},
+    "C++ Developer":{"salary":45, "gladness_less":25, "monotone":20},
+    "Ruby Developer":{"salary":70, "gladness_less":1, "monotone":10}
 }
 
 class Job:
@@ -199,6 +220,20 @@ class Job:
         self.job = random.choice(list(job_list))
         self.salary = job_list[self.job]["salary"]
         self.gladness_less = job_list[self.job]["gladness_less"]
+        self.monotone = job_list[self.job]["monotone"]
+
+friends_list = {
+    "Alkash":{"social_support":5, "danger":30},
+    "Intelegent":{"social_support":15, "danger":10},
+    "Krashchiy drug":{"social_support":20, "danger":5},
+    "Naykrashchiy drug":{"social_support":30, "danger":0}
+}
+
+class Friends:
+    def __init__(self, friends_list):
+        self.friend = random.choice(list(friends_list))
+        self.social.support = friends_list[self.friend]["social_support"]
+        self.danger = friends_list[self.friend]["danger"]
 
 ivan = Human(name="Ivan")
 
